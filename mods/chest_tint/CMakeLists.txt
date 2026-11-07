@@ -12,6 +12,16 @@ if (CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     endif ()
 endif ()
 
+# Sous Windows (MSVC), le jeu est compile avec les memes options. Sans /Zc:__cplusplus, la
+# macro NULL des en-tetes du jeu vaut 0 au lieu de nullptr et casse la bibliotheque standard.
+if (CMAKE_CXX_COMPILER_FRONTEND_VARIANT STREQUAL "MSVC")
+    add_compile_options(
+        "$<$<COMPILE_LANGUAGE:CXX>:/Zc:__cplusplus>"
+        "$<$<COMPILE_LANGUAGE:CXX>:/utf-8>"
+        "$<$<COMPILE_LANGUAGE:CXX>:/bigobj>"
+    )
+endif ()
+
 add_mod(chest_tint
     FEATURES game
     SOURCES  src/mod.cpp
