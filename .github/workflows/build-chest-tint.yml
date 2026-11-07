@@ -1,0 +1,37 @@
+name: Build Chest Tint
+
+# Compile uniquement le mod mods/chest_tint (pas tout le jeu).
+# Lance-le a la main : onglet "Actions" -> "Build Chest Tint" -> "Run workflow".
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'mods/chest_tint/**'
+      - '.github/workflows/build-chest-tint.yml'
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-24.04]
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Configure
+        run: cmake -S mods/chest_tint -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload mod
+        uses: actions/upload-artifact@v4
+        with:
+          name: chest_tint-${{ runner.os }}
+          path: build/mods/chest_tint.dusk
+          if-no-files-found: error
